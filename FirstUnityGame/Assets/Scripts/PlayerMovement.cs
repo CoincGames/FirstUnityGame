@@ -2,14 +2,40 @@
 
 public class PlayerMovement : MonoBehaviour
 {
-    public Rigidbody physicsBody;
-    public Transform cameraLocation;
+    [SerializeField]
+    [Tooltip("The player that is being followed.")]
+    private Rigidbody playerBody;
+    [SerializeField]
+    [Tooltip("The Camera to move around which follows the player.")]
+    private Transform cameraLocation;
+    [SerializeField]
+    [Tooltip("The respawn point of the player when reset.")]
+    private Transform respawnPoint;
 
-    public float movingForce;
-    public float jumpingForce;
+
+    [Header("Properties")]
+    [SerializeField]
+    [Tooltip("The force applied in any of the moving directions.")]
+    private float movingForce;
+    [SerializeField]
+    [Tooltip("The force applied which acts like a jump.")]
+    private float jumpingForce;
     bool isJumping = false;
 
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
+        UpdateMovement();
+
+        if (transform.position.y < -10)
+        {
+            transform.position = respawnPoint.position;
+            playerBody.velocity = new Vector3(0, 0, 0);
+            playerBody.angularVelocity = new Vector3(0, 0, 0);
+        }
+    }
+
+    private void UpdateMovement()
+    {
         // Movement
         // http://zonalandeducation.com/mstm/physics/mechanics/forces/forceComponents/forceComponents.html
         float z = transform.position.z - cameraLocation.position.z;
@@ -27,19 +53,19 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKey("w"))
         {
-            physicsBody.AddForce(forceX * Time.deltaTime, 0, forceZ * Time.deltaTime);
+            playerBody.AddForce(forceX * Time.deltaTime, 0, forceZ * Time.deltaTime);
         }
         if (Input.GetKey("s"))
         {
-            physicsBody.AddForce(-forceX * Time.deltaTime, 0, -forceZ * Time.deltaTime);
+            playerBody.AddForce(-forceX * Time.deltaTime, 0, -forceZ * Time.deltaTime);
         }
         if (Input.GetKey("a"))
         {
-            physicsBody.AddForce(-forceZ * Time.deltaTime, 0, forceX * Time.deltaTime);
+            playerBody.AddForce(-forceZ * Time.deltaTime, 0, forceX * Time.deltaTime);
         }
         if (Input.GetKey("d"))
         {
-            physicsBody.AddForce(forceZ * Time.deltaTime, 0, -forceX * Time.deltaTime);
+            playerBody.AddForce(forceZ * Time.deltaTime, 0, -forceX * Time.deltaTime);
         }
 
         // Jump
@@ -47,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (!isJumping)
             {
-                physicsBody.AddForce(0, jumpingForce, 0);
+                playerBody.AddForce(0, jumpingForce, 0);
                 isJumping = true;
             }
         }

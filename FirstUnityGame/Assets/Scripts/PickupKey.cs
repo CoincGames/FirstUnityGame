@@ -3,15 +3,37 @@ using UnityEngine;
 
 public class PickupKey : MonoBehaviour
 {
-    public GameObject owner;
-    public GameObject associatedDoor;
+    [SerializeField]
+    [Tooltip("The Game Object which owns this script. (Used to destroy the object)")]
+    private GameObject owner;
 
-    public float fadeDuration = 3f;
+    [SerializeField]
+    [Tooltip("The door to unlock when this key is picked up.")]
+    private GameObject associatedDoor;
+
+    [SerializeField]
+    [Tooltip("The effect to play when key is picked up.")]
+    private GameObject pickupEffect;
+
+    [SerializeField]
+    [Range(.25f, 5f)]
+    [Tooltip("The duration in seconds of the fade animation on the door.")]
+    private float fadeDuration;
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.CompareTag("Player"))
+            Pickup();
+    }
+
+    private void Pickup()
+    {
+        // Play the effect at given position with given rotation
+        Instantiate(pickupEffect, transform.position, transform.rotation);
+
         // Make the key disappear
         owner.GetComponent<Renderer>().enabled = false;
+        owner.GetComponent<Collider>().enabled = false;
 
         // Enable clipping through the door
         associatedDoor.GetComponent<Collider>().enabled = false;
@@ -19,7 +41,7 @@ public class PickupKey : MonoBehaviour
         // Fade the container gameObject
         StartCoroutine(BeginFade(associatedDoor.GetComponent<Renderer>().material));
         // Fade any of its children (MUST BE IN FADE RENDER MODE TO FADE OUT)
-        foreach(Renderer renderer in associatedDoor.GetComponentsInChildren<Renderer>())
+        foreach (Renderer renderer in associatedDoor.GetComponentsInChildren<Renderer>())
         {
             foreach (Material mat in renderer.materials)
             {

@@ -17,17 +17,21 @@ public class GameManager : MonoBehaviour
         instance = this;
     }
 
-    // Start properties for GameManager object
-    public GameObject completeLevelUI;
-    public int score { get; set; }
-    public int goal = 100;
+    [SerializeField]
+    [Tooltip("The UI to display when the level gets completed.")]
+    private GameObject displayUIOnLevelComplete;
+
+    public int score { get; set; } = 0;
+    [SerializeField]
+    [Tooltip("The score required to complete the level.")]
+    private int scoreToCompleteLevel = 100;
 
     public void addScore(int addedScore)
     {
         score += addedScore;
-        if (score >= goal)
+        if (score >= scoreToCompleteLevel)
         {
-            completeLevelUI.SetActive(true);
+            displayUIOnLevelComplete.SetActive(true);
         }
     }
 }
